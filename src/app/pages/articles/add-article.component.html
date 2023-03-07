@@ -1,0 +1,30 @@
+<br>
+<div class="container" style="margin-bottom: 50px;">
+    <div class="row d-flex justify-content-center">
+        <div class="card" style="width: 18rem;">
+            <br>
+            <div class="card-body">
+                <h5 class="card-title">Crear artículo</h5>
+                <form [formGroup]="newArtForm" (ngSubmit)="createArt()">
+                    Nombre:
+                    <input [class.is-invalid]="newArtForm.get('titulo')?.touched && newArtForm.get('titulo')?.invalid"
+                        type="titulo" class="form-control" formControlName="titulo">
+                    Descripción:
+                    <input [class.is-invalid]="newArtForm.get('texto')?.touched 
+                        && newArtForm.get('texto')?.invalid" type="texto" class="form-control" 
+                        formControlName="texto">
+                    Imagen:
+                    <input class="form-control form-control-sm" id="formFileSm" type="file"
+                        (change)="onFileSelect($event)">
+                    <br>
+                    <div class="d-flex justify-content-center">
+                        <div class="col-11 d-grid gap-2">
+                            <button class="btn btn-primary" type="submit">Crear</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br>

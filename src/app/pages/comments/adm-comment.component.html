@@ -1,0 +1,174 @@
+<div class="container-fluid" style="padding-bottom: 100px;">
+    <h1 style="text-align: center;">Administrar comentarios</h1>
+    <hr>
+    <div class="d-flex justify-content-center">
+        <div class="col-11">
+            <div *ngIf="comments == null; else showTable">
+                <h4 style="text-align: center;">No hay comentarios registrados</h4>
+            </div>
+            <ng-template #showTable>
+                <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                    class="table table-striped table-bordered table-sm row-border hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Comentario</th>
+                            <th>Estado</th>
+                            <th>Usuario</th>
+                            <th>Artículo</th>
+                            <th>Fecha</th>
+                            <th>Imagen</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let comment of comments">
+                            <td>{{ comment.comm_id }}</td>
+                            <td>{{ comment.comm_text }}</td>
+                            <td *ngIf="comment.comm_state == 1; else noAccepted">Aceptado</td>
+                            <ng-template #noAccepted>No aceptado</ng-template>
+                            <td>{{ comment.UserEmail }}</td>
+                            <td>{{ comment.art_name }}</td>
+                            <td>{{ comment.comm_created_at }}</td>
+                            <td>
+                                <img *ngIf="comment.art_img != null; else noImg" src="{{'data:image/' + 
+                                    comment.art_img_ext + ';base64,' + comment.art_img}}" alt="art_img" height="150px"
+                                    style="width: 230px;">
+                                <ng-template #noImg>
+                                    <img src="../../../assets/images/noimage.jpg" style="width: 230px;" height="150px"
+                                        alt="noimg">
+                                </ng-template>
+                            </td>
+                            <td>
+                                <div class="row d-flex justify-content-center">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-warning btn-sm" (click)="openFormModalUpdt(comment.comm_id, 
+                                    comment.comm_state)">
+                                            Editar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row d-flex justify-content-center" style="padding-top: 10px;">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-danger btn-sm"
+                                            (click)="openFormModalDelete(comment.comm_id)">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row d-flex justify-content-center" style="padding-top: 10px;">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary btn-sm" (click)="openFormModal(comment.art_id,
+                                        comment.art_name, comment.art_desc)">
+                                            Agregar comentario
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </ng-template>
+        </div>
+    </div>
+</div>
+
+<!--form modal-->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Añadir comentario al artículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newCommForm" (ngSubmit)="addComm()">
+                    Nombre del artículo
+                    <input [class.is-invalid]="newCommForm.get('art_name')?.touched 
+                        && newCommForm.get('art_name')?.invalid" type="art_name" class="form-control" 
+                        formControlName="art_name" readonly>
+                    Descripción del artículo
+                    <input [class.is-invalid]="newCommForm.get('art_desc')?.touched 
+                        && newCommForm.get('art_desc')?.invalid" type="art_desc" class="form-control" 
+                        formControlName="art_desc" readonly>
+                    Comentario
+                    <input [class.is-invalid]="newCommForm.get('comm_text')?.touched && newCommForm.get('comm_text')?.invalid"
+                        type="comm_text" class="form-control" formControlName="comm_text">
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Crear comentario
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<br>
+
+<!--form modal updt-->
+<div class="modal fade" id="myModalUpdt" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Actualizar artículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newCommForm" (ngSubmit)="updtComm()">
+                    <input type="text" hidden type="comm_id" class="form-control" formControlName="comm_id">
+
+                    ¿Cambiar el estado del comentario?
+
+                    <select name="comm_state" formControlName="comm_state" id="comm_state" class="form-select">
+                        <option *ngFor="let opt of st_dic | keyvalue">{{opt.value}}</option>
+                    </select>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Aceptar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+
+<!--form modal delete-->
+<div class="modal fade" id="myModalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Eliminar comentario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newCommForm" (ngSubmit)="deleteComm()">
+                    <input type="text" hidden type="comm_id" class="form-control" formControlName="comm_id">
+
+                    ¿Eliminar el comentario?
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            Eliminar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br>

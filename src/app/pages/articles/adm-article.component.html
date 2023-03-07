@@ -1,0 +1,230 @@
+<div class="container-fluid" style="padding-bottom: 100px;">
+    <h1 style="text-align: center;">Administrar artículos</h1>
+    <hr>
+    <div class="d-flex justify-content-center">
+        <div class="col-11 d-grid gap-2">
+            <button class="btn btn-primary btn-sm" (click)="openFormModal()">
+                Añadir artículo
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="d-flex justify-content-center">
+        <div class="col-11">
+            <div *ngIf="articles == null; else showTable">
+                <h4 style="text-align: center;">No hay artículos registrados</h4>
+            </div>
+            <ng-template #showTable>
+                <table style="table-layout: fixed;" datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                    class="table table-striped table-bordered table-sm row-border hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 3%;">ID</th>
+                            <th style="width: 21%;">Imagen</th>
+                            <th style="width: 22%;">Título</th>
+                            <th style="width: 28%;">Descripción</th>
+                            <th style="width: 12%;">Fecha</th>
+                            <th style="width: 12%;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let article of articles">
+                            <input type="hidden" value="{{article.art_img_ext}}">
+                            <td>{{ article.art_id }}</td>
+                            <td>
+                                <img *ngIf="article.art_img != null; else noImg" src="{{'data:image/' + 
+                                    article.art_img_ext + ';base64,' + article.art_img}}" alt="art_img" height="150px"
+                                    style="width: 230px;">
+                                <ng-template #noImg>
+                                    <img src="../../../assets/images/noimage.jpg" style="width: 230px;" height="150px"
+                                        alt="noimg">
+                                </ng-template>
+                            </td>
+                            <td>{{ article.art_name }}</td>
+                            <td>{{ article.art_desc }}</td>
+                            <td>{{ article.created_at }}</td>
+                            <td>
+                                <div class="row d-flex justify-content-center">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-warning btn-sm" (click)="openFormModalUpdt(article.art_id, 
+                                        article.art_name, article.art_desc, article.art_img, article.art_img_ext)">
+                                            Editar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row d-flex justify-content-center" style="margin-top: 10px;">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-danger btn-sm" (click)="openFormModalDelete(article.art_id, article.art_name, article.art_desc, 
+                                article.art_img, article.art_img_ext)">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row d-flex justify-content-center" style="margin-top: 10px;">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-secondary btn-sm" (click)="openFormModalComment(
+                                            article.art_id, article.art_name, article.art_desc)">
+                                            Agregar comentario
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </ng-template>
+        </div>
+    </div>
+</div>
+
+<!--form modal-->
+<div class="modal fade" id="myModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Registrar artículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newArtForm" (ngSubmit)="newArt()">
+                    Nombre del artículo
+                    <input [class.is-invalid]="newArtForm.get('titulo')?.touched && newArtForm.get('titulo')?.invalid"
+                        type="titulo" class="form-control" formControlName="titulo">
+                    Descripción del artículo
+                    <input [class.is-invalid]="newArtForm.get('texto')?.touched 
+                        && newArtForm.get('texto')?.invalid" type="texto" class="form-control" formControlName="texto">
+                    Imagen
+                    <input class="form-control form-control-sm" id="formFileSm" type="file"
+                        (change)="onFileSelect($event)">
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Registrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<br>
+
+<!--form modal updt-->
+<div class="modal fade" id="myModalUpdt" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Actualizar artículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newArtForm" (ngSubmit)="updtArt()">
+                    Id
+                    <input type="text" readonly type="art_id" class="form-control" formControlName="art_id">
+                    <ng-container *ngIf="newArtForm.get('old_img').value != null">
+                        Imagen
+                        <img [src]="img" alt="art_img" class="card-img-top" height="350px">
+                    </ng-container>
+                    Nombre del artículo
+                    <input [class.is-invalid]="newArtForm.get('titulo')?.touched && newArtForm.get('titulo')?.invalid"
+                        type="titulo" class="form-control" formControlName="titulo">
+                    Descripción del artículo
+                    <input [class.is-invalid]="newArtForm.get('texto')?.touched 
+                        && newArtForm.get('texto')?.invalid" type="texto" class="form-control" formControlName="texto">
+                    Imagen
+                    <input class="form-control form-control-sm" id="formFileSm" type="file"
+                        (change)="onFileSelect($event)">
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Registrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+
+<!--form modal delete-->
+<div class="modal fade" id="myModalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">¿Eliminar artículo?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newArtForm" (ngSubmit)="deleteArt()">
+                    Id
+                    <input type="text" readonly type="art_id" class="form-control" formControlName="art_id">
+                    <ng-container *ngIf="newArtForm.get('old_img').value != null">
+                        Imagen
+                        <img [src]="img" alt="art_img" class="card-img-top" height="350px">
+                    </ng-container>
+                    Nombre del artículo
+                    <input readonly type="titulo" class="form-control" formControlName="titulo">
+                    Descripción del artículo
+                    <input readonly type="texto" class="form-control" formControlName="texto">
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-danger">
+                            Eliminar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+
+<!--form modal add comment-->
+<div class="modal fade" id="myModalAddComment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Añadir comentario al artículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newCommForm" (ngSubmit)="addComm()">
+                    Nombre del artículo
+                    <input [class.is-invalid]="newCommForm.get('art_name')?.touched 
+                        && newCommForm.get('art_name')?.invalid" type="art_name" class="form-control"
+                        formControlName="art_name" readonly>
+                    Descripción del artículo
+                    <input [class.is-invalid]="newCommForm.get('art_desc')?.touched 
+                        && newCommForm.get('art_desc')?.invalid" type="art_desc" class="form-control"
+                        formControlName="art_desc" readonly>
+                    Comentario
+                    <input
+                        [class.is-invalid]="newCommForm.get('comm_text')?.touched && newCommForm.get('comm_text')?.invalid"
+                        type="comm_text" class="form-control" formControlName="comm_text">
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Crear comentario
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<br>

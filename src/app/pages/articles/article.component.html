@@ -1,0 +1,19 @@
+<div class="container-fluid" style="padding-bottom: 100px;">
+    <h1 style="text-align: center;">Artículos</h1>
+    <div class="row">
+        <div *ngFor="let article of articles" class="col-sm-4">
+            <div class="card">
+                <img *ngIf="article.art_img != null" src="{{'data:image/' + article.art_img_ext + ';base64,' + article.art_img}}" 
+                    alt="art_img" class="card-img-top" height="304px">
+                <div class="card-body">
+                    <h5 class="card-title">{{article.art_name}}</h5>
+                    <p><strong>{{article.created_at}}</strong></p>
+                    <p class="card-text">{{article.art_desc}}</p>
+                    <a type="button" [routerLink]="['/view-article', article.art_id]" class="btn btn-primary btn-sm">Ver mas</a>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+

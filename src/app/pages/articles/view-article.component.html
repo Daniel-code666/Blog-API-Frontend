@@ -1,0 +1,76 @@
+<br>
+<div class="container-fluid" style="margin-bottom: 100px;">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h1>{{ article.art_name }}</h1>
+                </div>
+                <div class="text-center">
+                    <img *ngIf="article.art_img != null" class="img-fluid img-thumbnail" [src]="img" style="width: 500px;">
+                </div>
+                <div class="card-body">
+                    <h5>Descripción</h5>
+                    <p class="card-text">
+                        {{ article.art_desc }}
+                    </p>
+                    <hr>
+                    <h3 class="mt-5" style="text-align: center;">Comentarios</h3>
+
+                    <div *ngIf="isLogged" class="row">
+                        <div style="text-align: right;">
+                            <button class="btn btn-primary btn-sm" (click)="openFormModalComment(
+                                article.art_id, article.art_name, article.art_desc)">
+                                Añadir comentario
+                            </button>
+                        </div>
+                    </div>
+
+                    <div *ngFor="let comment of comments">
+                        <h4><i class="bi bi-person-circle"></i>{{comment.UserName}}</h4>
+                        <h5>{{comment.comm_created_at}}</h5>
+                        <p>{{comment.comm_text}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--form modal add comment-->
+<div class="modal fade" id="myModalAddComment" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Añadir comentario al artículo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="newCommForm" (ngSubmit)="addComm()">
+                    Nombre del artículo
+                    <input [class.is-invalid]="newCommForm.get('art_name')?.touched 
+                        && newCommForm.get('art_name')?.invalid" type="art_name" class="form-control"
+                        formControlName="art_name" readonly>
+                    Descripción del artículo
+                    <input [class.is-invalid]="newCommForm.get('art_desc')?.touched 
+                        && newCommForm.get('art_desc')?.invalid" type="art_desc" class="form-control"
+                        formControlName="art_desc" readonly>
+                    Comentario
+                    <input
+                        [class.is-invalid]="newCommForm.get('comm_text')?.touched && newCommForm.get('comm_text')?.invalid"
+                        type="comm_text" class="form-control" formControlName="comm_text">
+                    <br>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            Crear comentario
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
